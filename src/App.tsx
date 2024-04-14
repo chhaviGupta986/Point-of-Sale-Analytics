@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./Login";
 import Home from "./Home";
 import NoPage from "./NoPage";
+import GoogleSheetsAuth from "./FileUpload";
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/upload" element={<GoogleSheetsAuth />} />
         <Route path="*" element={<NoPage />} />
       </Routes>
     </BrowserRouter>
