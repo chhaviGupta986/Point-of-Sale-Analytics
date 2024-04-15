@@ -31,7 +31,7 @@ def registeruser(request):
                 user.save()
                 return redirect('home')
     context = {'form': form}
-    return render(request, 'Home.tsx', context)
+    return render(request, 'register.html', context)
 
 def home(request):
     return render(request, 'home.html')
