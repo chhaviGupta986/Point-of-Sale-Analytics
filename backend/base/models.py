@@ -16,3 +16,10 @@ class User(AbstractUser):
     
     groups = models.ManyToManyField('auth.Group', related_name='custom_user_set')
     user_permissions = models.ManyToManyField('auth.Permission', related_name='custom_user_permission_set')
+
+class Links(models.Model):
+    companyname = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
+    link = models.CharField(max_length=300)
+    
+    def __str__(self):
+        return self.link
