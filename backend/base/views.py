@@ -14,8 +14,9 @@ from oauth2client.service_account import ServiceAccountCredentials
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.tools import run_flow
 from oauth2client.file import Storage
-import gspread
-
+from .visualization import hello
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
 
 def registeruser(request):
     form = MyUserCreationForm()
@@ -143,4 +144,49 @@ def visualization(request, pk):
 
 @login_required(login_url='loginpage')
 def prediction(request, pk):
+    data = hello()
     return render(request, 'predictions.html')
+
+@login_required(login_url = 'loginpage')
+def googleauthenticate():
+    flow = InstalledAppFlow.from_client_secrets_file(
+        '../client_secret_new.json', 
+        ['https://www.googleapis.com/auth/spreadsheets.readonly'], 
+        redirect_uri='http://localhost:8000')
+    credentials = flow.run_local_server(port=8000)
+    return credentials
+
+@login_required(login_url = 'loginpage')
+def get_spreadsheet_id_from_url(url):
+    try:
+        parts = url.split('/')
+        spreadsheet_id = parts[-2]
+        return spreadsheet_id
+    except Exception as e:
+        # Handle any errors that occur during ID extraction
+        print("Error extracting Spreadsheet ID:", e)
+        return None
+
+@login_required(login_url = 'loginpage')
+def uploadsheet(request):
+    if request.method == "POST":
+        form = LinkForm(request.POST, request=request)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Link added successfully.")
+            
+            # Get the data from the form
+            data = form.cleaned_data
+            print(data)
+            # Create a pandas DataFrame from the data
+            df = pd.DataFrame([data])
+            
+            # Print the DataFrame
+            print(df)
+    else:
+        form = LinkForm()
+
+    context = {
+        'form': form
+    }
+    return render(request, 'uploadsheet.html', context)
