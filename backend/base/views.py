@@ -145,6 +145,7 @@ def visualization(request, pk):
 @login_required(login_url='loginpage')
 def prediction(request, pk):
     data = hello()
+    data = hello()
     return render(request, 'predictions.html')
 
 @login_required(login_url = 'loginpage')
