@@ -12,10 +12,7 @@ class User(AbstractUser):
     type = models.CharField(max_length = 200, null = True)
     years = models.BigIntegerField(null = True)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name', 'username'] 
-    
-    groups = models.ManyToManyField('auth.Group', related_name='custom_user_set')
-    user_permissions = models.ManyToManyField('auth.Permission', related_name='custom_user_permission_set')
+    REQUIRED_FIELDS = ['company_name', 'username']
 
 class Links(models.Model):
     companyname = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)

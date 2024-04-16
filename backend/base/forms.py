@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['company_name', 'email', 'username', 'type', 'years']
+        fields = ['company_name', 'email', 'username', 'type', 'years', 'password1', 'password2']
         
 class LoginForm(ModelForm):
     class Meta:

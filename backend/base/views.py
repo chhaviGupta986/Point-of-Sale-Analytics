@@ -8,6 +8,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from urllib.parse import unquote
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import make_password
+import pandas as pd
+from oauth2client.service_account import ServiceAccountCredentials
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.tools import run_flow
+from oauth2client.file import Storage
+import gspread
+
 
 def registeruser(request):
     form = MyUserCreationForm()
@@ -42,19 +50,21 @@ def loginuser(request):
         return redirect('home')
     
     if request.method == "POST":
+
         email = request.POST.get('email')
         password = request.POST.get('password')
-        print(email)
-        print(password)
 
+        #checks whether user exists
         try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
+            email = User.objects.get(email = email)
+        except:
             messages.error(request, 'User does not exist.')
-            return render(request, 'login.html', {'page': page, 'form': form})
 
+        #checks for the user with given mail and password
+        user = authenticate(request, email = email, password = password)
+    
         # Check if password is correct
-        if check_password(password, user.password):
+        if user != None:
             
             if user.is_superuser:
                 login(request, user)
@@ -75,15 +85,20 @@ def loginuser(request):
 
     return render(request, 'login.html', context)
 
-
 def logoutuser(request):
     logout(request)
     messages.success(request, 'Successfully Logged Out.')
     return redirect('home')
 
+@login_required(login_url = 'loginpage')
 def home(request):
-    return render(request, 'home.html')
+    users = User.objects.all()
+    context = {
+        'users': users
+    }
+    return render(request, 'home.html', context)
 
+@login_required(login_url = 'loginpage')
 def uploadsheet(request):
     form = LinkForm()
     
@@ -92,6 +107,9 @@ def uploadsheet(request):
         company_id = request.POST.get('companyname')
         link = request.POST.get('link')
 
+        sheetDF = pd.read_html(link)[0]
+        print(sheetDF)
+
         # Fetch the User instance using the provided company ID
         company = User.objects.get(pk=company_id)
 
@@ -99,7 +117,7 @@ def uploadsheet(request):
         print(company.company_name)
 
         # Create form instance with the fetched User instance
-        form = LinkForm(request.POST, initial={'companyname': company})
+        form = LinkForm(request.POST, initial={'companyname': company})    
 
         if form.is_valid():
             form.save()
@@ -110,3 +128,19 @@ def uploadsheet(request):
     }
 
     return render(request, 'uploadsheet.html', context)
+
+@login_required(login_url = 'loginpage')
+def profile(request, pk):
+    user = User.objects.get(id=pk)
+    context={
+        'user':user
+    }
+    return render(request, 'profile.html', context)
+
+@login_required(login_url = 'loginpage')
+def visualization(request, pk): 
+    return render(request, 'visualization.html')
+
+@login_required(login_url='loginpage')
+def prediction(request, pk):
+    return render(request, 'predictions.html')

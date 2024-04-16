@@ -10,7 +10,7 @@ urlpatterns=[
     path('logout/', views.logoutuser, name = 'logout'),
     path('home', views.home, name='home'),
     path('upload', views.uploadsheet, name='uploadsheet'),
-    # path('profile', views.profile, name='profile'),
-    # path('visualization', views.visualization, name='visualization'),
-    # path('prediction', views.prediction, name='prediction'),
+    path('profile/<str:pk>', views.profile, name = 'profile'),
+    path('visualization/<str:pk>', views.visualization, name='visualization'),
+    path('prediction/<str:pk>', views.prediction, name='prediction'),
 ]

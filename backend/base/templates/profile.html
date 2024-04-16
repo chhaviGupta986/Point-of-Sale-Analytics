@@ -3,7 +3,7 @@
 
 {% block content %}
     {{ block.super }}
-
+            
         {% if messages %}
         <div class="messages">
             {% for message in messages %}
@@ -11,4 +11,10 @@
             {% endfor %}
         </div>
         {% endif %}
+
+        <h1>{{request.user.company_name}}</h1>
+        <h1>{{request.user.email}}</h1>
+        <h1>{{request.user.type}}</h1>
+        <h1>{{request.user.years}}</h1>
+
 {% endblock %}
