@@ -151,7 +151,7 @@ def prediction(request, pk):
 @login_required(login_url = 'loginpage')
 def googleauthenticate():
     flow = InstalledAppFlow.from_client_secrets_file(
-        '../client_secret_new.json', 
+        '../client_secret_new2.json', 
         ['https://www.googleapis.com/auth/spreadsheets.readonly'], 
         redirect_uri='http://localhost:8000')
     credentials = flow.run_local_server(port=8000)
