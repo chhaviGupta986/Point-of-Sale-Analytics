@@ -14,8 +14,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.tools import run_flow
 from oauth2client.file import Storage
-import gspread
-
+from .visualization import hello
 
 def registeruser(request):
     form = MyUserCreationForm()
@@ -143,4 +142,5 @@ def visualization(request, pk):
 
 @login_required(login_url='loginpage')
 def prediction(request, pk):
+    data = hello()
     return render(request, 'predictions.html')
