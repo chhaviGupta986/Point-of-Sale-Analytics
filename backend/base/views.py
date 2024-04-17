@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .models import User, Links
+from .models import User, Links, Test, DemandForecasting
 from .forms import MyUserCreationForm, LoginForm, LinkForm
 from django.db.models import Q
 from django.conf import settings
@@ -17,6 +17,15 @@ from oauth2client.file import Storage
 from .visualization import hello
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from dash import Dash, html, dcc
+import plotly.express as px
+import pandas as pd
+import re
+from django.shortcuts import render
+from plotly.offline import plot
+import plotly.graph_objects as go
+from .ML_product_demand_forecasting import forecast
+# Create your views here.
 
 def registeruser(request):
     form = MyUserCreationForm()
@@ -94,41 +103,30 @@ def logoutuser(request):
 @login_required(login_url = 'loginpage')
 def home(request):
     users = User.objects.all()
+    def scatter():
+        x1 = [1,2,3,4]
+        y1 = [30, 35, 25, 45]
+
+        trace = go.Scatter(
+            x=x1,
+            y = y1
+        )
+        layout = dict(
+            title='Simple Graph',
+            xaxis=dict(range=[min(x1), max(x1)]),
+            yaxis = dict(range=[min(y1), max(y1)])
+        )
+
+        fig = go.Figure(data=[trace], layout=layout)
+        plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+        return plot_div
+
+
     context = {
-        'users': users
+        'users': users,
+        'plot1': scatter()
     }
     return render(request, 'home.html', context)
-
-@login_required(login_url = 'loginpage')
-def uploadsheet(request):
-    form = LinkForm()
-    
-    if request.method == "POST":
-        # Retrieve company name from POST data
-        company_id = request.POST.get('companyname')
-        link = request.POST.get('link')
-
-        sheetDF = pd.read_html(link)[0]
-        print(sheetDF)
-
-        # Fetch the User instance using the provided company ID
-        company = User.objects.get(pk=company_id)
-
-        # Print company name for debugging
-        print(company.company_name)
-
-        # Create form instance with the fetched User instance
-        form = LinkForm(request.POST, initial={'companyname': company})    
-
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Link added successfully.")
-
-    context = {
-        'form': form
-    }
-
-    return render(request, 'uploadsheet.html', context)
 
 @login_required(login_url = 'loginpage')
 def profile(request, pk):
@@ -144,9 +142,29 @@ def visualization(request, pk):
 
 @login_required(login_url='loginpage')
 def prediction(request, pk):
-    data = hello()
-    data = hello()
-    return render(request, 'predictions.html')
+    def scatter():
+        x1 = [1,2,3,4]
+        y1 = [30, 35, 25, 45]
+
+        trace = go.Scatter(
+            x=x1,
+            y = y1
+        )
+        layout = dict(
+            title='Simple Graph',
+            xaxis=dict(range=[min(x1), max(x1)]),
+            yaxis = dict(range=[min(y1), max(y1)])
+        )
+
+        fig = go.Figure(data=[trace], layout=layout)
+        plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+        return plot_div
+
+    context ={
+        'plot1': scatter()
+    }
+
+    return render(request, 'dash_template.html',context)
 
 @login_required(login_url = 'loginpage')
 def googleauthenticate():
@@ -172,18 +190,30 @@ def get_spreadsheet_id_from_url(url):
 def uploadsheet(request):
     if request.method == "POST":
         form = LinkForm(request.POST, request=request)
+        companyname = request.user
+        link = request.POST.get('link')
+
         if form.is_valid():
-            form.save()
+            link_instance = Links(companyname=companyname, link=link)
+            link_instance.save()
+
             messages.success(request, "Link added successfully.")
             
-            # Get the data from the form
-            data = form.cleaned_data
-            print(data)
-            # Create a pandas DataFrame from the data
-            df = pd.DataFrame([data])
-            
-            # Print the DataFrame
-            print(df)
+            # data = form.cleaned_data
+            # df = pd.DataFrame([data])
+            # print(df)
+            # rets=forecast(df)
+            # order_of_return=['actuals','predictions','dates_to_plot','top_prod_indexes','r2_array']
+
+            # demand_forecast = DemandForecasting(
+            #     companyname=request.user,  # Assuming request.user is the company name
+            #     actuals=rets['actuals'],
+            #     predictions=rets['predictions'],
+            #     dates=rets['dates_to_plot'],
+            #     top_products=rets['top_prod_indexes'],
+            #     rsquare=rets['r2_array']
+            # )
+            # demand_forecast.save()
     else:
         form = LinkForm()
 

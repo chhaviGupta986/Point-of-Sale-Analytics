@@ -20,3 +20,21 @@ class Links(models.Model):
     
     def __str__(self):
         return self.link
+    
+class Test(models.Model):
+    companyname = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
+    array = models.CharField(max_length=300)
+    
+    def __str__(self):
+        return self.array
+    
+class DemandForecasting(models.Model):
+    companyname = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
+    actuals = models.CharField(max_length=300)
+    predictions = models.CharField(max_length=300)
+    dates = models.CharField(max_length=300)
+    top_products = models.CharField(max_length=300)
+    rsquare = models.CharField(max_length=300)
+    
+    def __str__(self):
+        return self.companyname

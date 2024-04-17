@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+{% extends 'base.html' %}
+{% load static %}
+{% load plotly_dash %}
+
+{% block content %}
+{{ block.super }}
+
+<head>
+</head>
+
+    <body>    
+        {% load plotly_dash %}
+
+        <div class="{% plotly_class name='SimpleExample' %}" style="height: 100%; width: 100%">
+            {% plotly_app name='SimpleExample' ratio=0.45 %}
+        </div>
+
+        <br>
+        {{ plot1 | safe }}
+    </body>
+{% endblock %}
+</html>

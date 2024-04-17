@@ -3,6 +3,7 @@ from django.urls import re_path
 from . import views
 from django.conf.urls.static import static
 from django.conf import settings
+from base import SimpleExample
 
 urlpatterns=[
     path('', views.loginuser, name='loginpage'),

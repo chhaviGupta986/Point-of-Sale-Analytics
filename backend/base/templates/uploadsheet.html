@@ -1,8 +1,69 @@
-{% extends 'main.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
     {{ block.super }}
+
+    <head>
+        <style>
+            .form{
+                height: fit-content;
+                padding: 5vh;
+                width: fit-content;
+                background-color: #172A46;
+                border-radius: 2vh;
+                margin: auto;
+                margin-top: 10vh;
+            }
+
+            .form input{
+                width: 20vw;
+                padding: 2vh;
+                border-radius: 1vh;
+                border-style: solid;
+                border-width: 0.2vh;
+            }
+
+            .form input:hover{
+                border-color: #172A46;
+                box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            }
+
+            .form label{
+                color: white;
+            }
+
+            .form button{
+                width: 100%;
+                padding: 2vh;
+                border-radius: 2vh;
+                border-style: solid;
+                border-width: 0.2vh;
+                color: white;
+                background-color: #2b4466;
+            }
+
+            .form button:hover{
+                background-color: #040c17;
+            }
+            .instructions{
+                text-align: center;
+            }
+            .instructions h1{
+                padding: 0;
+                margin: 0;
+                color: rgb(123, 123, 123);
+                margin-top: 5vh;
+            }
+            .instructions p{
+                padding: 0;
+                color: rgb(123, 123, 123);
+                margin: 0;
+            }
+        </style>
+    </head>
+
+    <body>
 
         {% if messages %}
         <div class="messages">
@@ -12,10 +73,24 @@
         </div>
         {% endif %}
 
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Submit</button>
-        </form>
+        <div class="form">
+            <form method="post">
+                {% csrf_token %}
+                <label>Link:</label><br>
+                <input type="text" name = "link" placeholder="Enter your Google Drive link here."><br><br>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+
+        <div class="instructions">
+            <h1>What to do?</h1><br>
+            <p>Upload your company data on Google Drive.</p><br>
+            <p>Copy and paste the Google Drive link here.</p><br>
+            <p>Upon submitting, authorize access to your Drive.</p><br>
+            <p>Wait for a few minutes for your data to be processed.</p><br>
+            <p>Enjoy the insights!</p>
+        </div>
+
+    </body>
 
 {% endblock %}

@@ -4,7 +4,7 @@ from .models import User, Links
 from django.contrib.auth.forms import UserCreationForm
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from oauth2client.tools import run_flow,argparser
+from oauth2client.tools import run_flow, argparser
 from oauth2client.file import Storage
 from oauth2client.client import flow_from_clientsecrets
 
@@ -25,7 +25,7 @@ class LinkForm(ModelForm):
 
     class Meta:
         model = Links
-        fields = ['companyname', 'link']
+        fields = ['link']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -37,7 +37,7 @@ class LinkForm(ModelForm):
             if spreadsheet_id:
                 # Authenticate the user using OAuth2
                 flow = flow_from_clientsecrets(
-                    '../client_secret_new.json',
+                    '../client_secret_new2.json',
                     scope=['https://www.googleapis.com/auth/spreadsheets.readonly'],
                     redirect_uri='http://localhost:8000/uploadsheet')
 

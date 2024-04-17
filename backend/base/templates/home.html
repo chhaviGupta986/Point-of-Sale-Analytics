@@ -1,14 +1,223 @@
-{% extends 'main.html' %}
+<!DOCTYPE html>
+<html>
+{% extends 'base.html' %}
 {% load static %}
+{% load plotly_dash %}
 
 {% block content %}
-    {{ block.super }}
+{{ block.super }}
 
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div {% if message.tags %} class = "{{ message.tags }}"{% endif %}>{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
+<head>
+    <style>
+        .gridwrap{
+            margin-top: 10vh;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            justify-content: space-around;
+        }
+
+        .card{
+            height: 60vh;
+            margin: auto;
+            border-radius: 2vh;
+            width: 25vw;
+            background-color: #172A46;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        }
+
+        .image1{
+            height: 30vh;
+            background-image: url('../static/bg1.png');
+            background-size: cover;
+            border-radius: 2vh;
+            background-repeat: no-repeat;
+            size: 0.5;
+        }
+
+        .image2{
+            height: 30vh;
+            background-image: url('../static/bg2.png');
+            background-size: cover;
+            border-radius: 2vh;
+            background-repeat: no-repeat;
+            size: 0.5;
+        }
+        
+        .image3{
+            height: 30vh;
+            background-image: url('../static/bg3.png');
+            background-size: cover;
+            border-radius: 2vh;
+            background-repeat: no-repeat;
+            size: 0.5;
+        }
+        a{
+            text-decoration: none;
+        }
+        .card h3{
+            margin: 0;
+            padding: 0;
+            color: rgb(192, 192, 192);
+            text-align: center;
+        }
+        .card p{
+            text-align: center;
+            padding: 2vh;
+            padding-top: 0;
+            color: rgb(226, 226, 226);
+        }
+        .card:hover{
+            scale: 1.04;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 20px;
+        }
+        .maincard{
+            width: 90%;
+            background-color: #172A46;
+            margin: auto;
+            height: 40vh;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            margin-top: 10vh;
+            border-radius: 2vh; 
+        }
+        .gif{
+            height: 30vh;
+            background-image: url('../static/homepic.png');
+            background-size: contain;
+            border-radius: 2vh;
+            background-repeat: no-repeat;
+            height: 40vh;
+            text-align: right;
+        }
+        .gif h1{
+            color: rgb(234, 234, 234);
+            font-size: 8vh;
+            width: 60%;
+            margin-left: auto;
+            text-shadow: 2px 2px 5px black;
+            padding-right: 3vw;
+            padding-top: 10vh;
+        }
+        .details h1{
+            color: rgb(205, 205, 205);
+            margin-top: 10vh;
+            text-shadow: 2px 2px 5px black;
+            font-size: 8vh;
+            margin-left: 4vw;
+        }
+        .leftcard{
+            background-image: linear-gradient(to right, #172a46, #142640, #10213a, #0d1d34, #0a192e);
+            height: 40vh;
+            width: 90vw;
+            margin: auto;
+            margin-top: 5vh;
+            border-radius: 2vh;
+            box-shadow: rgba(0, 0, 0, 0.25) -25px 0px 50px -12px;
+        }
+        .rightcard{
+            background-image: linear-gradient(to left, #172a46, #142640, #10213a, #0d1d34, #0a192e);            
+            height: 40vh;
+            width: 90vw;
+            margin: auto;
+            margin-top: 5vh;
+            border-radius: 2vh;
+            box-shadow: rgba(0, 0, 0, 0.25) 25px 0px 50px -12px;
+        }
+        .leftcard h1{
+            margin: 0;
+            padding-top: 5vh;
+            padding-left: 3vw;
+            color: #848dc2;
+        }
+        .leftcard p{
+            width: 70%;
+            color: #e6e8fe;
+            padding-left: 3vw;
+            
+        }
+        .rightcard h1{
+            text-align: right;
+            margin: 0;
+            padding-top: 5vh;
+            color: #848dc2;
+            padding-right: 3vw;
+        }
+        .rightcard p{
+            text-align: right;
+            width: 70%;
+            margin-left: auto;
+            color: #e6e8fe;
+            padding-right: 3vw;
+            
+        }
+    </style>
+</head>
+
+    <body>
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div {% if message.tags %} class = "{{ message.tags }}"{% endif %}>{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="maincard">
+                <div class="gif">
+                    <h1>From Data to Decisions: Your Insight Gateway</h1>
+                </div>
+            </div>
+            <div class="gridwrap">
+                <a href = "{% url 'uploadsheet' %}"><div class="card">
+                    <div class="image3"></div>
+                    <h3>Upload your data</h3>
+                    <p>Experience the convenience of securely connecting to your Google Drive data with ease. Simply provide the link, and enjoy seamless access to your data visualized.</p>
+                </div></a>
+                <a href = "{% url 'visualization' user.id %}"><div class="card">
+                    <div class="image1"></div>
+                    <h3>Understand your data</h3>
+                    <p>Unlock the potential of your data through captivating visualizations, providing you with deep insights and a comprehensive understanding of your information landscape, empowering you with valuable knowledge to make informed decisions.</p>
+                </div></a>
+                <a href = "{% url 'prediction' user.id %}"><div class="card">
+                    <div class="image2"></div>
+                    <h3>Get future predictions</h3>
+                    <p>Gain foresight into future demand and sales trends by leveraging advanced predictive analytics tailored to your data. Our cutting-edge machine learning model delivers accurate predictions, enabling you to anticipate market dynamics.</p>
+                </div></a>
+            </div>
+            <div class="details">
+                <h1>Analysis we provide</h1>
+                <div class="leftcard">
+                    <h1>Demand Forecasting</h1>
+                    <p>
+                        Demand forecasting is the process of predicting future customer demand for a product or service based on historical data, market trends, and other relevant factors. By analyzing past sales patterns and external influences, businesses can anticipate fluctuations in demand and make informed decisions about production, inventory management, and resource allocation. Effective demand forecasting helps businesses optimize operations, minimize costs, and maintain customer satisfaction by ensuring the right products are available at the right time and in the right quantities.  
+                    </p>
+                </div><br>
+                <div class="rightcard">
+                    <h1>Sales Forecasting</h1>
+                    <p>
+                        Sales forecasting is the practice of predicting future sales volumes and revenue for a business based on historical data, market trends, and other relevant factors. By analyzing past sales performance and considering variables such as seasonality, economic conditions, and marketing efforts, businesses can estimate future sales with greater accuracy. Effective sales forecasting enables companies to set realistic targets, allocate resources efficiently, and develop strategies to capitalize on opportunities and mitigate risks. It serves as a critical tool for business planning, budgeting, and decision-making, ultimately driving growth and success.
+                    </p>
+                </div><br>
+                <div class="leftcard">
+                    <h1>ABC Analysis</h1>
+                    <p>
+                        Sales ABC analysis is a methodical approach used by businesses to segment products or customers into three distinct categories: A, B, and C, based on their significance to overall revenue generation. Category A encompasses high-value items or top-tier customers that contribute substantially to the company's sales figures. These are typically the core products or clients that drive the majority of revenue. Category B comprises products or customers of moderate value, while Category C consists of low-value items or clients with minimal contribution to the bottom line.
+                    </p>
+                </div><br>
+                <div class="rightcard">
+                    <h1>Sales Visualization</h1>
+                    <p>
+                        Sales visualization is the process of converting sales data into visual formats such as charts, graphs, and dashboards to gain deeper insights into sales performance. By visualizing key metrics like revenue, trends, and customer behavior, businesses can identify patterns, correlations, and outliers more effectively. This enables stakeholders to make informed decisions, track progress towards goals, and identify areas for improvement. 
+                    </p>
+                </div><br>
+                <div class="leftcard">
+                    <h1>Fraud Analysis</h1>
+                    <p>
+                        Sales fraud analysis involves the examination of sales data and transactions to detect and prevent fraudulent activities within an organization. By analyzing various indicators such as anomalies, irregularities, and patterns, businesses can identify potential instances of fraud, including sales manipulation, unauthorized discounts, or fictitious transactions. Utilizing advanced analytics and machine learning algorithms, sales fraud analysis helps businesses uncover suspicious activities, mitigate risks, and protect against financial losses.  
+                    </p>
+                </div><br>
+                <div class="rightcard"></div>
+            </div>
+            <br><br><br>
+            <br><br><br>
+    </body>
 {% endblock %}
+</html>

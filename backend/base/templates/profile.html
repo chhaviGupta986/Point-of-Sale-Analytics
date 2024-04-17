@@ -1,20 +1,61 @@
-{% extends 'main.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
     {{ block.super }}
-            
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div {% if message.tags %} class = "{{ message.tags }}"{% endif %}>{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
+    <head>
+        <style>
+            .profilediv{
+                height: 40vh;
+                width: 40vh;
+                border-radius: 2vh;
+                background-color: #172A46;
+                box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+                margin: auto;
+                margin-top: 20vh;
+                padding: 5vh;
+            }
 
-        <h1>{{request.user.company_name}}</h1>
-        <h1>{{request.user.email}}</h1>
-        <h1>{{request.user.type}}</h1>
-        <h1>{{request.user.years}}</h1>
+            .profilediv h3{
+                color: rgb(105, 141, 202);
+                text-shadow: 2px 2px 5px black;
+                margin: 0;
+            }
 
+            .profilediv p{
+                color: rgb(229, 229, 229);
+                margin-top: 0;
+                margin-top: 0.5vh;
+                font-size: 3vh;
+            }
+
+            .div{
+                display: flex;
+            }
+        </style>
+    </head>
+        <body>
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div {% if message.tags %} class = "{{ message.tags }}"{% endif %}>{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        
+            <div class="profilediv">
+                    <h3>Company Name:</h3>
+                    <p>{{request.user.company_name}}</p>
+                    
+                    <h3>Company Email:</h3>
+                    <p>{{request.user.email}}</p>
+                    
+                    <h3>Company Type:</h3>
+                    <p>{{request.user.type}}</p>
+                    
+                    <h3>Company age:</h3>
+                    <p>{{request.user.years}}</p>
+                    
+            </div>
+        </body>
 {% endblock %}
