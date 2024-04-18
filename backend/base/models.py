@@ -37,4 +37,4 @@ class DemandForecasting(models.Model):
     rsquare = models.CharField(max_length=300)
     
     def __str__(self):
-        return self.companyname
+        return self.actuals

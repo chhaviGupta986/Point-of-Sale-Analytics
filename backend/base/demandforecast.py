@@ -2,14 +2,11 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output
 from django_plotly_dash import DjangoDash
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = DjangoDash('SimpleExample', external_stylesheets=external_stylesheets)
+app = DjangoDash('demandforecasting', external_stylesheets=external_stylesheets)
 
 
 app.layout = html.Div([
@@ -17,8 +14,8 @@ app.layout = html.Div([
     dcc.Slider(
         id='slider-updatemode',
         marks={i: '{}'.format(i) for i in range(20)},
-        max=7,
-        value=1,
+        max=20,
+        value=2,
         step=1,
         updatemode='drag',
     ),
@@ -27,14 +24,16 @@ app.layout = html.Div([
 
 @app.callback(
                Output('slider-graph', 'figure'),
-               [Input('slider-updatemode', 'value'),
-                Input('some-other-component', 'arr')])
+              [Input('slider-updatemode', 'value')])
 
-
-def visualize(value, arr):
-    x = list(range(1, value + 1))
+def display_value(value):
+    x = []
     for i in range(value):
-        y = arr[i]
+        x.append(i)
+
+    y = []
+    for i in range(value):
+        y.append(i*i)
 
     graph = go.Scatter(
         x=x,

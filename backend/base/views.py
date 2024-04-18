@@ -17,6 +17,7 @@ from oauth2client.file import Storage
 from .visualization import hello
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from django.shortcuts import get_object_or_404
 from dash import Dash, html, dcc
 import plotly.express as px
 import pandas as pd
@@ -24,7 +25,9 @@ import re
 from django.shortcuts import render
 from plotly.offline import plot
 import plotly.graph_objects as go
+import json
 from .ML_product_demand_forecasting import forecast
+from .ML_inventory_analysis import generate_ABC_data
 # Create your views here.
 
 def registeruser(request):
@@ -103,28 +106,9 @@ def logoutuser(request):
 @login_required(login_url = 'loginpage')
 def home(request):
     users = User.objects.all()
-    def scatter():
-        x1 = [1,2,3,4]
-        y1 = [30, 35, 25, 45]
-
-        trace = go.Scatter(
-            x=x1,
-            y = y1
-        )
-        layout = dict(
-            title='Simple Graph',
-            xaxis=dict(range=[min(x1), max(x1)]),
-            yaxis = dict(range=[min(y1), max(y1)])
-        )
-
-        fig = go.Figure(data=[trace], layout=layout)
-        plot_div = plot(fig, output_type='div', include_plotlyjs=False)
-        return plot_div
-
 
     context = {
         'users': users,
-        'plot1': scatter()
     }
     return render(request, 'home.html', context)
 
@@ -142,29 +126,67 @@ def visualization(request, pk):
 
 @login_required(login_url='loginpage')
 def prediction(request, pk):
-    def scatter():
-        x1 = [1,2,3,4]
-        y1 = [30, 35, 25, 45]
+    demand_forecast = get_object_or_404(DemandForecasting, companyname=request.user)
+    actuals = demand_forecast.actuals
+    predictions = demand_forecast.predictions
+    dates = demand_forecast.dates
+    error = demand_forecast.rsquare
 
-        trace = go.Scatter(
+    data_list = json.loads(actuals)
+    predicted_list = json.loads(predictions)
+    array = dates.split(', ')
+
+    # Define scatter function before the loop
+    def scatter(value, arr, arr2):
+        x1 = [1, 2, 3, 4, 5, 6, 7]
+        y1 = arr
+        y2 = arr2
+
+        trace1 = go.Scatter(
             x=x1,
-            y = y1
-        )
-        layout = dict(
-            title='Simple Graph',
-            xaxis=dict(range=[min(x1), max(x1)]),
-            yaxis = dict(range=[min(y1), max(y1)])
+            y=y1,
+            name='Actual',
+            mode='lines+markers',
+            line=dict(color='blue', dash='solid'),
+            marker=dict(color='blue', size=8)
         )
 
-        fig = go.Figure(data=[trace], layout=layout)
+        trace2 = go.Scatter(
+            x=x1,
+            y=y2,
+            name='Predicted',
+            mode='lines+markers',
+            line=dict(color='red', dash='dash'),
+            marker=dict(color='red', size=8)
+        )
+
+        layout = dict(
+            title=f'Product ID: {k}',
+            plot_bgcolor='lightgrey',
+            paper_bgcolor='#172A46',
+            xaxis=dict(range=[min(x1), max(x1)]),
+            yaxis=dict(range=[0, max(max(y1), max(y2))]),
+            font=dict(family='Arial', size=12, color='white'),
+        )
+
+        fig = go.Figure(data=[trace1, trace2], layout=layout)
         plot_div = plot(fig, output_type='div', include_plotlyjs=False)
         return plot_div
 
-    context ={
-        'plot1': scatter()
+    plots = []
+    k = 1  # Initialize k before the loop
+    # Call scatter function inside the loop and collect the plot_divs
+    for arr, arr2 in zip(data_list, predicted_list):
+        plot_div = scatter(7, arr, arr2)
+        plots.append(plot_div)
+        k += 1  # Increment k for each plot
+
+    context = {
+        'plots': plots
     }
 
-    return render(request, 'dash_template.html',context)
+    return render(request, 'predictions.html', context)
+
 
 @login_required(login_url = 'loginpage')
 def googleauthenticate():
@@ -199,21 +221,23 @@ def uploadsheet(request):
 
             messages.success(request, "Link added successfully.")
             
-            # data = form.cleaned_data
-            # df = pd.DataFrame([data])
-            # print(df)
-            # rets=forecast(df)
-            # order_of_return=['actuals','predictions','dates_to_plot','top_prod_indexes','r2_array']
+            df = form.cleaned_data['link_data']
+            df_copy=df.copy()
 
-            # demand_forecast = DemandForecasting(
-            #     companyname=request.user,  # Assuming request.user is the company name
-            #     actuals=rets['actuals'],
-            #     predictions=rets['predictions'],
-            #     dates=rets['dates_to_plot'],
-            #     top_products=rets['top_prod_indexes'],
-            #     rsquare=rets['r2_array']
-            # )
-            # demand_forecast.save()
+            rets=forecast(df)
+
+            demand_forecast = DemandForecasting(
+                companyname=request.user,
+                actuals=rets[0],
+                predictions=rets[1],
+                dates=rets[2],
+                top_products=rets[3],
+                rsquare=rets[4]
+            )
+            demand_forecast.save()
+            
+            rets2=generate_ABC_data(df_copy)
+            
     else:
         form = LinkForm()
 

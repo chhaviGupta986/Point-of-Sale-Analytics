@@ -10,9 +10,10 @@ def forecast(df_param):
   dataco_supply_chain=df_param
   # Standardize column names for dataco_supply_chain dataset
   dataco_supply_chain.columns = dataco_supply_chain.columns.str.upper().str.replace(' ', '_')
-  dataco_supply_chain.head()
+  # dataco_supply_chain.head()
   dataco_supply_chain = dataco_supply_chain[['ORDER_DATE_(DATEORDERS)','CATEGORY_NAME','CATEGORY_ID'
       ,'ORDER_ITEM_QUANTITY'
+
       ,'ORDER_REGION'
       ,'ORDER_STATUS',
       'PRODUCT_NAME',
@@ -29,7 +30,7 @@ def forecast(df_param):
   dataco_supply_chain['ORDER_WEEKDAY'] = dataco_supply_chain['ORDER_DATE_(DATEORDERS)'].dt.weekday
   dataco_supply_chain['ORDER_DATE'] = pd.to_datetime(dataco_supply_chain['ORDER_DATE_(DATEORDERS)'].dt.date)
   dataco_supply_chain.drop(columns='ORDER_DATE_(DATEORDERS)', inplace=True)
-  dataco_supply_chain = dataco_supply_chain[(dataco_supply_chain['ORDER_DATE'] <= pd.to_datetime('2017-07-01'))]
+  # dataco_supply_chain = dataco_supply_chain[(dataco_supply_chain['ORDER_DATE'] <= pd.to_datetime('2017-07-01'))]
   df=dataco_supply_chain
   # df.info()
   # Make a copy of the DataFrame
@@ -54,7 +55,7 @@ def forecast(df_param):
 
   daily_orders_cust['NUM_CUSTOMERS'] = daily_orders_cust['NUM_CUSTOMERS']
   unique_dates_cust = pd.date_range(start=daily_orders_cust['ORDER_DATE'].min(), end=daily_orders_cust['ORDER_DATE'].max(), freq='D')
-  # print("len of unique dates is ",len(unique_dates_cust),unique_dates_cust.shape)
+  print("total number of unique dates is ",len(unique_dates_cust),unique_dates_cust.shape)
   unique_products = daily_orders_cust['PRODUCT_NAME'].unique()
   date_product_combinations = pd.DataFrame([(date, product) for date in unique_dates_cust for product in unique_products],
                                           columns=['ORDER_DATE', 'PRODUCT_NAME'])
@@ -131,7 +132,7 @@ def forecast(df_param):
   complete_df_cust['YEAR_WEEK'] = complete_df_cust['ORDER_DATE'].dt.isocalendar().week
   complete_df['DAY_OF_WEEK_NUMERICAL'] = complete_df['ORDER_DATE'].dt.dayofweek
 
-  complete_df.head()
+  # complete_df.head()
   # num_unique_products = daily_orders['PRODUCT_NAME'].nunique()
   # print("Number of unique product names:", num_unique_products)
   complete_df['IS_WEEKEND'] = complete_df['DAY_OF_WEEK_NUMERICAL'].isin([5, 6]).astype(int)
@@ -141,6 +142,7 @@ def forecast(df_param):
   predictions=[]
   actuals=[]
   r2_array=[]
+
   i=0
   for prod_name in unique_products:
     product_time_series[i] = complete_df[complete_df['PRODUCT_NAME'] == i].reset_index(drop=True)
@@ -152,7 +154,8 @@ def forecast(df_param):
     product_time_series[i]=product_time_series[i][:(-1*period)]
     warnings.filterwarnings("ignore")
     i+=1
-
+  # print("INSIDE ML_PRODUCT_DEMAND_FORECASTING prodcut_time series.columns=",product_time_series[0].columns)
+  # print("product_time_series[4].head()",product_time_series[4].head())
   top_prod_indexes = {}
   # prod_index=6
   i=0
@@ -240,13 +243,3 @@ def forecast(df_param):
   #     print(f"Product id {prod_index}, Total Predicted Demand={total_value} units")
   return actuals,predictions,dates_to_plot,top_prod_indexes,r2_array
 
-# ip=pd.read_csv("D:/STUDIES_or_COLLEGE/All sems/TY/sem 6/MP/MP Project/MP - Copy/MP - Copy/backend/datasets/DataCoSupplyChainDataset.csv",header= 0,encoding= 'unicode_escape')
-# rets=forecast(ip)
-# order_of_return=['actuals','predictions','dates_to_plot','top_prod_indexes','r2_array']
-# print("PRINTING RETSS\n")
-# i=0
-# for ret in rets:
-#    print("printing the ",order_of_return[i])
-#    print(ret)
-#    print()
-#    i+=1

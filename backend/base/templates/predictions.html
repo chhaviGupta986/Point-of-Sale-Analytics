@@ -1,15 +1,34 @@
+<!DOCTYPE html>
+<html>
 {% extends 'base.html' %}
 {% load static %}
+{% load plotly_dash %}
 
 {% block content %}
-    {{ block.super }}
+{{ block.super }}
 
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div {% if message.tags %} class = "{{ message.tags }}"{% endif %}>{{ message }}</div>
-            {% endfor %}
+<head>
+    <style>
+        .plots{
+            width: 90%;
+            margin: auto;
+        }
+
+        h1{
+            padding: 5vw;
+            color: rgb(227, 227, 227);
+            font-size: 8vh;
+            padding-bottom: 0;
+        }
+    </style>
+</head>
+
+    <body>    
+        <h1>Demand Forecasting of each product</h1>
+        {% load plotly_dash %}
+        <div class="plots">
+            {{ plots | safe }}
         </div>
-        {% endif %}
-
+    </body>
 {% endblock %}
+</html>
